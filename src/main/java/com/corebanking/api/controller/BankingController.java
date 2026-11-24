@@ -47,4 +47,9 @@ public class BankingController {
             return ResponseEntity.status(404).body(Map.of("status", "FAILED", "error", e.getMessage()));
         }
     }
+    
+    @GetMapping("/holders/{accountType}")
+    public List<String> getAccountHoldersByType(@PathVariable String accountType) {
+        return bankingService.getAccountHolderNamesByType(accountType);
+    }
 }

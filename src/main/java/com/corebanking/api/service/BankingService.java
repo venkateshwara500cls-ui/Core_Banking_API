@@ -19,7 +19,11 @@ public class BankingService {
     public List<Accounts> getAllAccounts() {
         return accountRepository.findAll();
     }
-
+    
+    public List<String> getAccountHolderNamesByType(String accountType) {
+        return accountRepository.findCustomerNamesByAccountType(accountType.toUpperCase());
+    }
+    
     public Accounts getAccountByNumber(String accountNo) {
         return accountRepository.findByAccountNo(accountNo)
                 .orElseThrow(() -> new RuntimeException("Account not found: " + accountNo));
@@ -48,5 +52,7 @@ public class BankingService {
         accountRepository.save(receiver);
 
         return "Transferred " + amount + " from " + fromAccNo + " to " + toAccNo;
+        
+   
     }
 }
