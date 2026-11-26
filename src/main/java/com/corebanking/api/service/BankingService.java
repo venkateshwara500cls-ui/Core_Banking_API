@@ -1,6 +1,7 @@
 package com.corebanking.api.service;
 
 import com.corebanking.api.entity.Accounts;
+import com.corebanking.api.repository.AccountBalanceResponse;
 import com.corebanking.api.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,11 @@ public class BankingService {
     public List<String> getAccountHolderNamesByType(String accountType) {
         return accountRepository.findCustomerNamesByAccountType(accountType.toUpperCase());
     }
+    
+	public AccountBalanceResponse getAccountBalance(String accountNo) {
+		return accountRepository.findBalanceByAccountNo(accountNo)
+				.orElseThrow(() -> new RuntimeException("Account not found: " + accountNo));
+	}
     
     public Accounts getAccountByNumber(String accountNo) {
         return accountRepository.findByAccountNo(accountNo)

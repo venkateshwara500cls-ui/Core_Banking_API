@@ -19,4 +19,11 @@ public interface AccountRepository extends JpaRepository<Accounts, Long> {
             WHERE a.account_type = :accountType
             """, nativeQuery = true)
     List<String> findCustomerNamesByAccountType(@Param("accountType") String accountType);
+    
+    @Query(value = """
+    		SELECT c.full_name, a.account_no, a.account_type, a.balance,  a.status
+    		FROM accounts a
+	INNER JOIN customers c ON a.customer_id = c.customer_id
+    		WHERE a.account_no=:accountNo""", nativeQuery = true)
+    		Optional<AccountBalanceResponse> findBalanceByAccountNo(@Param("accountNo") String accountNo);
 }

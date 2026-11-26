@@ -52,4 +52,13 @@ public class BankingController {
     public List<String> getAccountHoldersByType(@PathVariable String accountType) {
         return bankingService.getAccountHolderNamesByType(accountType);
     }
+    
+    @GetMapping("/balance/{accountNo}")
+	public ResponseEntity<?> getAccountBalance(@PathVariable String accountNo) {
+		try {
+			return ResponseEntity.ok(bankingService.getAccountBalance(accountNo));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
+		}
+	}
 }
