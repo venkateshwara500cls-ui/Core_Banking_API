@@ -1,6 +1,8 @@
 package com.corebanking.api.controller;
 
 import com.corebanking.api.entity.Accounts;
+import com.corebanking.api.entity.Transaction;
+import com.corebanking.api.repository.AccountDetailProjection;
 import com.corebanking.api.service.BankingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,4 +63,21 @@ public class BankingController {
 			return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
 		}
 	}
+    
+    @GetMapping("/city/{city}")
+    public List<AccountDetailProjection> getAccountsByBranchCity(@PathVariable String city) {
+        return bankingService.getAccountsByCity(city);
+    }
+    
+    @GetMapping("/high-value")
+    public List<AccountDetailProjection> getHighValueAccounts(
+            @RequestParam(defaultValue = "50000") BigDecimal minBalance) {
+        return bankingService.getHighValueAccounts(minBalance);
+    }
+    
+    @GetMapping("/{accountNo}/transactions")
+    public List<Transaction> getMiniStatement(@PathVariable String accountNo) {
+        return bankingService.getMiniStatement(accountNo);
+    }
+    
 }

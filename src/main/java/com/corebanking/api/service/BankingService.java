@@ -1,8 +1,12 @@
 package com.corebanking.api.service;
 
 import com.corebanking.api.entity.Accounts;
+import com.corebanking.api.entity.Transaction;
 import com.corebanking.api.repository.AccountBalanceResponse;
+import com.corebanking.api.repository.AccountDetailProjection;
 import com.corebanking.api.repository.AccountRepository;
+import com.corebanking.api.repository.TransactionRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -12,24 +16,38 @@ import java.util.List;
 public class BankingService {
 
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
-    public BankingService(AccountRepository accountRepository) {
+    public BankingService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
         this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     public List<Accounts> getAllAccounts() {
         return accountRepository.findAll();
     }
-    
+
+    public List<AccountDetailProjection> getAccountsByCity(String city) {
+        return accountRepository.findAccountsByBranchCity(city);
+    }
+
+    public List<AccountDetailProjection> getHighValueAccounts(BigDecimal minBalance) {
+        return accountRepository.findHighValueActiveAccounts(minBalance);
+    }
+
+    public List<Transaction> getMiniStatement(String accountNo) {
+        return transactionRepository.findMiniStatementByAccountNo(accountNo);
+    }
+
     public List<String> getAccountHolderNamesByType(String accountType) {
         return accountRepository.findCustomerNamesByAccountType(accountType.toUpperCase());
     }
-    
-	public AccountBalanceResponse getAccountBalance(String accountNo) {
-		return accountRepository.findBalanceByAccountNo(accountNo)
-				.orElseThrow(() -> new RuntimeException("Account not found: " + accountNo));
-	}
-    
+
+    public AccountBalanceResponse getAccountBalance(String accountNo) {
+        return accountRepository.findBalanceByAccountNo(accountNo)
+                .orElseThrow(() -> new RuntimeException("Account not found: " + accountNo));
+    }
+
     public Accounts getAccountByNumber(String accountNo) {
         return accountRepository.findByAccountNo(accountNo)
                 .orElseThrow(() -> new RuntimeException("Account not found: " + accountNo));
@@ -57,8 +75,16 @@ public class BankingService {
         accountRepository.save(sender);
         accountRepository.save(receiver);
 
+        // Save transaction ledger entry
+        Transaction txn = new Transaction();
+        txn.setFromAccountId(sender.getAccountId());
+        txn.setToAccountId(receiver.getAccountId());
+        txn.setAmount(amount);
+        txn.setTxnType("TRANSFER");
+        txn.setStatus("SUCCESS");
+        txn.setRemarks("Transfer from " + fromAccNo + " to " + toAccNo);
+        transactionRepository.save(txn);
+
         return "Transferred " + amount + " from " + fromAccNo + " to " + toAccNo;
-        
-   
     }
 }
