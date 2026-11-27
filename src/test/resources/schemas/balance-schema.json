@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["fullName", "accountNo", "accountType", "balance", "status"],
+  "properties": {
+    "fullName": { "type": "string" },
+    "accountNo": { "type": "string" },
+    "accountType": { "type": "string" },
+    "balance": { "type": "number" },
+    "status": { "type": "string" }
+  }
+}
